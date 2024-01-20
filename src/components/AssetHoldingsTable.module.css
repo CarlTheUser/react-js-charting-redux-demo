@@ -1,0 +1,13 @@
+.asset-table {
+    table-layout: auto;
+}
+
+.asset-table>thead>tr>th:nth-child(2),
+.asset-table>tbody>tr>td:nth-child(2) {
+    text-align: right;
+}
+
+.asset-table>thead>tr>th:nth-child(3),
+.asset-table>tbody>tr>td:nth-child(3) {
+    text-align: right;
+}
