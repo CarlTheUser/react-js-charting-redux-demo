@@ -10,9 +10,9 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2'
-import { derivedFieldsSelector } from '../state/assetPortfolio/assetPortfolioSelectors';
-import { RootState } from '../state/store';
+import { assetHoldingsTrendSelector } from '../state/assetPortfolio/assetPortfolioSelectors';
 import { useSelector } from 'react-redux';
+import { getFormattedDurationTextByMonthsCount } from '../util';
 
 ChartJS.register(
     CategoryScale,
@@ -35,34 +35,10 @@ export const options = {
             text: 'Asset Trend Projection',
         },
     },
+    interaction: {
+        mode: 'x' as const
+    }
 }
-
-const assetHoldings = (state: RootState) => state.assetPortfolio.holdings
-
-const assetHoldingsTrendSelector = createSelector([assetHoldings], (assetHoldings) => {
-
-    console.log('expensive bar chart data calculation running...')
-
-    return assetHoldings.map(assetHolding => {
-
-        const valueProjectionTrend: {
-            holdingPeriodInMonths: number
-            projectedValue: number
-        }[] = assetHolding.holdingPeriodInMonths > 0
-                ? Array.from({ length: assetHolding.holdingPeriodInMonths }, (_, index) => index)
-                    .map(x => ({
-                        holdingPeriodInMonths: x,
-                        projectedValue: x > 0 ? ((((assetHolding.asset.projectedAnnualReturnPercentage / 100) * assetHolding.principalAmount) / 12) * x) + assetHolding.principalAmount : assetHolding.principalAmount
-                    }))
-                : []
-
-        return {
-            id: assetHolding.id,
-            asset: assetHolding.asset,
-            projectedValueTrend: valueProjectionTrend
-        }
-    })
-})
 
 const chartDataSelector = createSelector([assetHoldingsTrendSelector], (assetHoldings) => {
 
@@ -75,8 +51,20 @@ const chartDataSelector = createSelector([assetHoldingsTrendSelector], (assetHol
         }
     }
 
+    const pointRadius = firstItem.projectedValueTrend.length < 10
+        ? 3
+        : firstItem.projectedValueTrend.length < 20
+            ? 2
+            : 1
+
+    const borderWidth = firstItem.projectedValueTrend.length < 10
+        ? 3
+        : firstItem.projectedValueTrend.length < 20
+            ? 2
+            : 1
+
     return {
-        labels: Array.from({ length: firstItem.projectedValueTrend.length }, (_, index) => index),
+        labels: Array.from({ length: firstItem.projectedValueTrend.length }, (_, index) => index !== 0 ? getFormattedDurationTextByMonthsCount(index) : 'initial'),
         datasets: assetHoldings.map(x => {
 
             let color: string
@@ -99,18 +87,19 @@ const chartDataSelector = createSelector([assetHoldingsTrendSelector], (assetHol
                 data: x.projectedValueTrend.map(x => x.projectedValue),
                 borderColor: color,
                 backgroundColor: color,
+                pointRadius: pointRadius,
+                borderWidth: borderWidth,
             }
         })
     }
 })
 
 
-const AssetHoldingsProjectedProgressChart = () => {
+const AssetHoldingsProjectedProgressLineChart = () => {
 
     const chartData = useSelector(chartDataSelector)
-
 
     return (<Line options={options} data={chartData} />)
 }
 
-export default AssetHoldingsProjectedProgressChart
+export default AssetHoldingsProjectedProgressLineChart

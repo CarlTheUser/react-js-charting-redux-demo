@@ -8,7 +8,7 @@ const AssetHoldingsProjectedValueTotal = () => {
     const totalValue = useSelector(assetHoldingsTotalProjectedValueSelector)
 
     return (<>
-        Projected portfolio value: {formatter.format(totalValue)}
+        <p>Projected portfolio value: <span className='font-semibold'>{formatter.format(totalValue)}</span></p>
     </>)
 }
 

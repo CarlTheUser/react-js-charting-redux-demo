@@ -3,9 +3,8 @@ import { AssetHolding, updatePrincipalAmount, updateProjectedAnnualReturnPercent
 import { useDispatch } from 'react-redux'
 
 import styles from './AssetHoldingsTable.module.css'
-
-// const formatter = new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2 })
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPercent } from '@fortawesome/free-solid-svg-icons'
 
 const AssetHoldingsTableRow: FC<{
     item: AssetHolding
@@ -18,7 +17,7 @@ const AssetHoldingsTableRow: FC<{
         <td>
             <input
                 type='number'
-                className='w-100 text-right'
+                className='w-100 text-right appearance-none border-b border-transparent hover:border-neutral-500'
                 min={0}
                 value={item.asset.projectedAnnualReturnPercentage}
                 onChange={(e) => dispatch(updateProjectedAnnualReturnPercentage({ id: item.id, projectedAnnualReturnPercentage: e.target.valueAsNumber }))}
@@ -27,7 +26,7 @@ const AssetHoldingsTableRow: FC<{
         <td>
             <input
                 type='number'
-                className='w-100 text-right'
+                className='w-100 text-right appearance-none border-b border-transparent hover:border-neutral-500'
                 min={0}
                 value={item.principalAmount}
                 onChange={(e) => dispatch(updatePrincipalAmount({ id: item.id, principalAmount: e.target.valueAsNumber }))}

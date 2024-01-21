@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { setHoldingPeriodInMonths } from '../state/assetPortfolio/assetPortfolioSlice'
+import { getFormattedDurationTextByMonthsCount } from '../util'
 
-const monthsInAYear = 12
 
-const AssetHolingPeriodRangeSlider = () => {
+
+const AssetHoldingPeriodRangeSlider = () => {
 
     const [value, setValue] = useState<number>(0)
 
@@ -22,26 +23,7 @@ const AssetHolingPeriodRangeSlider = () => {
 
     }, [value])
 
-    const valueTexts: string = useMemo(() => {
-
-        if (value < monthsInAYear) {
-
-            return `${value} ${value !== 1 ? 'months' : 'month'}`
-
-        } else {
-
-            const yearCount = Math.floor(value / 12)
-
-            const monthCount = Math.floor(value % monthsInAYear)
-
-            const monthText = monthCount > 0 ? ` ${monthCount} ${(monthCount > 1 ? 'months' : 'month')}` : ''
-
-            return `${yearCount} ${(yearCount > 1 ? 'years' : 'year')}${monthText}`
-        }
-
-        return ''
-
-    }, [value])
+    const valueTexts: string = useMemo(() => getFormattedDurationTextByMonthsCount(value), [value])
 
     return (
         <div className='flex flex-row gap-2 items-center'>
@@ -60,4 +42,4 @@ const AssetHolingPeriodRangeSlider = () => {
     )
 }
 
-export default AssetHolingPeriodRangeSlider
+export default AssetHoldingPeriodRangeSlider

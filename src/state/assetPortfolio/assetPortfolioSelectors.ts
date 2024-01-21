@@ -18,3 +18,28 @@ export const assetHoldingsTotalProjectedValueSelector = createSelector([derivedF
 
     return assetHoldings.reduce((accumulator: number, current) => accumulator + current.projectedValue, 0)
 })
+
+export const assetHoldingsTrendSelector = createSelector([assetHoldings], (assetHoldings) => {
+
+    console.log('expensive bar chart data calculation running...')
+
+    return assetHoldings.map(assetHolding => {
+
+        const valueProjectionTrend: {
+            holdingPeriodInMonths: number
+            projectedValue: number
+        }[] = assetHolding.holdingPeriodInMonths > 0
+                ? Array.from({ length: assetHolding.holdingPeriodInMonths + 1 }, (_, index) => index)
+                    .map(x => ({
+                        holdingPeriodInMonths: x,
+                        projectedValue: x > 0 ? ((((assetHolding.asset.projectedAnnualReturnPercentage / 100) * assetHolding.principalAmount) / 12) * x) + assetHolding.principalAmount : assetHolding.principalAmount
+                    }))
+                : []
+
+        return {
+            id: assetHolding.id,
+            asset: assetHolding.asset,
+            projectedValueTrend: valueProjectionTrend
+        }
+    })
+})
